@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 const UsageSchema = new mongoose.Schema({
   shopDomain: { type: String, required: true },
   orderId: { type: String, required: true },
-  treesPlanted: { type: Number, default: 1 },
-  amount: { type: Number },
+
+  treesPlanted: Number,
+  amount: Number,
+
   createdAt: { type: Date, default: Date.now }
 });
 

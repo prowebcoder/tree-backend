@@ -1,16 +1,21 @@
 import express from "express";
 import Usage from "../models/Usage.js";
-import Shop from "../models/Shop.js";
+import Store from "../models/Store.js";
 
 const router = express.Router();
 
+/**
+ * Save usage (called when a paid order happens)
+ */
 router.post("/", async (req, res) => {
   const { shopDomain, orderId, treesPlanted } = req.body;
 
-  const shop = await Shop.findOne({ shopDomain });
-  if (!shop) return res.status(404).json({ error: "Shop not found" });
+  const store = await Store.findOne({ shopDomain });
+  if (!store) {
+    return res.status(404).json({ error: "Store not found" });
+  }
 
-  const amount = treesPlanted * shop.pricePerTree;
+  const amount = treesPlanted * store.pricePerTree;
 
   const usage = await Usage.create({
     shopDomain,
@@ -22,6 +27,9 @@ router.post("/", async (req, res) => {
   res.json(usage);
 });
 
+/**
+ * Usage summary (billing)
+ */
 router.get("/:shopDomain", async (req, res) => {
   const data = await Usage.find({ shopDomain: req.params.shopDomain });
 

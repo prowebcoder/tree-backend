@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import shopRoutes from "../routes/shop.routes.js";
 import usageRoutes from "../routes/usage.routes.js";
-
+import orderRoutes from "../routes/order.routes.js";
 dotenv.config();
 
 const app = express();
@@ -19,5 +19,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/shop", shopRoutes);
 app.use("/api/usage", usageRoutes);
+app.use("/api/order", orderRoutes);
 
 export default app;

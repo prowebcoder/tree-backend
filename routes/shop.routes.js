@@ -1,17 +1,26 @@
 import express from "express";
-import Shop from "../models/Shop.js";
+import Store from "../models/Store.js";
 
 const router = express.Router();
 
+/**
+ * Called on app install / app load
+ * Creates or updates store info
+ */
 router.post("/", async (req, res) => {
-  const { shopDomain } = req.body;
+  const data = req.body;
 
-  let shop = await Shop.findOne({ shopDomain });
-  if (!shop) {
-    shop = await Shop.create({ shopDomain });
+  if (!data.shopDomain) {
+    return res.status(400).json({ error: "shopDomain is required" });
   }
 
-  res.json(shop);
+  const store = await Store.findOneAndUpdate(
+    { shopDomain: data.shopDomain },
+    data,
+    { upsert: true, new: true }
+  );
+
+  res.json(store);
 });
 
 export default router;

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>Tree Usage Dashboard</h2>
+  <input id="shop" placeholder="shop.myshopify.com" />
+  <button onclick="load()">Get Usage</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    async function load() {
+      const shop = document.getElementById("shop").value;
+      const res = await fetch(`/api/usage/${shop}`);
+      const data = await res.json();
+      document.getElementById("output").textContent =
+        JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>

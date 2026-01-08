@@ -18,6 +18,8 @@ router.post("/sync", async (req, res) => {
       planName
     } = req.body;
 
+    console.log("🏪 Syncing store:", shopDomain);
+
     if (!shopDomain) {
       return res.status(400).json({ error: "shopDomain is required" });
     }
@@ -36,13 +38,23 @@ router.post("/sync", async (req, res) => {
       { upsert: true, new: true }
     );
 
+    console.log("✅ Store synced successfully:", shopDomain);
+
     res.json({
       success: true,
       store
     });
   } catch (error) {
-    console.error("Store sync error:", error);
-    res.status(500).json({ error: "Failed to sync store" });
+    console.error("❌ Store sync error:", {
+      message: error.message,
+      stack: error.stack,
+      body: req.body
+    });
+    
+    res.status(500).json({ 
+      error: "Failed to sync store",
+      message: error.message 
+    });
   }
 });
 

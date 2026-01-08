@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema({
   shopDomain: { type: String, required: true },
-  orderId: { type: String, required: true, unique: true },
+   orderId: { type: String, required: true, unique: true },
 
   orderNumber: String,
   orderStatus: String,
@@ -27,5 +27,6 @@ const OrderSchema = new mongoose.Schema({
   paidAt: Date,
   createdAt: { type: Date, default: Date.now }
 });
+OrderSchema.index({ shopDomain: 1, orderId: 1 }, { unique: true });
 
 export default mongoose.model("Order", OrderSchema);

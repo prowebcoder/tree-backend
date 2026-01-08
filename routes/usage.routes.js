@@ -7,24 +7,60 @@ const router = express.Router();
 /**
  * Save usage (called when a paid order happens)
  */
+// usage.routes.js - Update the POST endpoint
 router.post("/", async (req, res) => {
-  const { shopDomain, orderId, treesPlanted } = req.body;
+  try {
+    const { shopDomain, orderId, treesPlanted, amount } = req.body;
 
-  const store = await Store.findOne({ shopDomain });
-  if (!store) {
-    return res.status(404).json({ error: "Store not found" });
+    console.log("📝 Processing usage for order:", { shopDomain, orderId, treesPlanted, amount });
+
+    // 1. Check if store exists
+    const store = await Store.findOne({ shopDomain });
+    if (!store) {
+      return res.status(404).json({ error: "Store not found" });
+    }
+
+    // 2. Check if this order already exists to prevent duplicates
+    const existingUsage = await Usage.findOne({ 
+      shopDomain, 
+      orderId 
+    });
+
+    if (existingUsage) {
+      console.log("⚠️ Order already processed, skipping duplicate:", orderId);
+      return res.json({ 
+        message: "Order already processed", 
+        existingUsage 
+      });
+    }
+
+    // 3. Calculate amount properly - use the amount from the request OR calculate
+    const calculatedAmount = amount || (treesPlanted * store.pricePerTree);
+
+    // 4. Create usage record
+    const usage = await Usage.create({
+      shopDomain,
+      orderId,
+      treesPlanted,
+      amount: calculatedAmount,
+      processedAt: new Date()
+    });
+
+    console.log("✅ Usage recorded:", {
+      orderId,
+      treesPlanted,
+      amount: calculatedAmount
+    });
+
+    res.json({
+      success: true,
+      usage
+    });
+
+  } catch (error) {
+    console.error("❌ Error processing usage:", error);
+    res.status(500).json({ error: "Failed to process usage" });
   }
-
-  const amount = treesPlanted * store.pricePerTree;
-
-  const usage = await Usage.create({
-    shopDomain,
-    orderId,
-    treesPlanted,
-    amount
-  });
-
-  res.json(usage);
 });
 
 /**
